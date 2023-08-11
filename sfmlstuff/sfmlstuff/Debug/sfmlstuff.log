@@ -1,0 +1,3 @@
+﻿  main.cpp
+C:\Users\newmi\OneDrive\Documents\c++\sfmlstuff\sfmlstuff\main.cpp(51,27): warning C4018: '<': signed/unsigned mismatch
+  sfmlstuff.vcxproj -> C:\Users\newmi\OneDrive\Documents\c++\sfmlstuff\Debug\sfmlstuff.exe
