@@ -1,7 +1,9 @@
-#include "GameWindow.h"
+#include "Application.h"
 
 int main(int argc, char* argv[])
 {
-    init();
+    Application app;
+
+    app.loop();
     return 0;
 }

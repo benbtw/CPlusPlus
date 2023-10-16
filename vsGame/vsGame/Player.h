@@ -1,10 +1,34 @@
 #pragma once
-#include <SDL.h>
+#include <iostream>
+#include "SDL.h"
+#include "Spritesheet.h"
 
-class Player {
-private:
-	SDL_Surface* player;
+class Player
+{
+
 public:
-	void movement();
-	void update();
+
+	enum class Direction {
+		NONE,
+		UP,
+		DOWN,
+		LEFT,
+		RIGHT
+	};
+
+	Player();
+	~Player();
+
+	void update(double deltaTime);
+	void draw(SDL_Surface* window_surface);
+	void handle_events(SDL_Event const& event);
+
+private:
+	Spritesheet spritesheet;
+	SDL_Rect player_pos;
+	double p_x;
+	double p_y;
+
+	Direction direction;
 };
+

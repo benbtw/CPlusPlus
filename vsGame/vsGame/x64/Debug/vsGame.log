@@ -1,4 +1,6 @@
-﻿  GameWindow.cpp
-  main.cpp
+﻿  Player.cpp
+C:\Users\newmi\OneDrive\Documents\c++\CPlusPlus\vsGame\vsGame\Player.cpp(42,17): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\newmi\OneDrive\Documents\c++\CPlusPlus\vsGame\vsGame\Player.cpp(43,17): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+  Spritesheet.cpp
   Generating Code...
   vsGame.vcxproj -> C:\Users\newmi\OneDrive\Documents\c++\CPlusPlus\vsGame\x64\Debug\vsGame.exe

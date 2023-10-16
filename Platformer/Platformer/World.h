@@ -9,9 +9,9 @@ private:
 	sf::Texture dirtTex;
 	sf::Texture backTex;
 	sf::Sprite background;
+public:
 	sf::Sprite grass;
 	sf::Sprite dirt;
-public:
 	sf::Vector2f grassPos = grass.getPosition();
 	sf::Vector2f dirtPos = dirt.getPosition();
 	static int mapArray[6][20];

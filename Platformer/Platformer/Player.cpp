@@ -63,7 +63,3 @@ void Player::update(sf::RenderWindow& window) {
 	window.draw(player);
 	movement();
 }
-
-void Player::collision_check() {
-
-}
