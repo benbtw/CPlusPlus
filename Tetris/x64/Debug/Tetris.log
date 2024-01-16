@@ -1,0 +1,4 @@
+﻿  main.cpp
+C:\Users\newmi\OneDrive\Documents\c++\CPlusPlus\Tetris\src\main.cpp(43,46): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\newmi\OneDrive\Documents\c++\CPlusPlus\Tetris\src\main.cpp(50,48): warning C4305: 'argument': truncation from 'double' to 'float'
+  Tetris.vcxproj -> C:\Users\newmi\OneDrive\Documents\c++\CPlusPlus\Tetris\x64\Debug\Tetris.exe
