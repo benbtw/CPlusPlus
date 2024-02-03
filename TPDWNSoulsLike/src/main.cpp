@@ -1,10 +1,11 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include <iostream>
-#include "Player.h"
+#include "headers/Player.h"
+#include "headers/TileMap.h"
 
 const int SC_WIDTH = 1280;
-const int SC_HEIGHT = 720;
+const int SC_HEIGHT = 704;
 
 int main(int argc, char* argvs[])
 {
@@ -29,6 +30,8 @@ int main(int argc, char* argvs[])
 
 	Player p = Player(renderer);
 
+	TileMap tm = TileMap(renderer);
+
 	SDL_Event e;
 	bool running = true;
 	while (running)
@@ -39,9 +42,11 @@ int main(int argc, char* argvs[])
 				running = false;
 		}
 
-		p.movement(e);
+		p.movement(e, tm.collisionTiles);
 
 		SDL_RenderClear(renderer);
+
+		tm.draw(renderer);
 
 		p.draw(renderer);
 

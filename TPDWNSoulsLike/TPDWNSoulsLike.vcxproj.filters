@@ -27,15 +27,21 @@
     <ClCompile Include="src\TileMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Enemy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Player.h">
+    <ClInclude Include="src\headers\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Sprites.h">
+    <ClInclude Include="src\headers\Sprites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\TileMap.h">
+    <ClInclude Include="src\headers\TileMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\headers\Enemy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

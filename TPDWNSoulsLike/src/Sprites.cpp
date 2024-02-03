@@ -1,4 +1,4 @@
-#include "Sprites.h"
+#include "headers/Sprites.h"
 
 SDL_Rect spriteRect(int x, int y, int w, int h)
 {
