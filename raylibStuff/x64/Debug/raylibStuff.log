@@ -1,2 +1,4 @@
-﻿  main.cpp
+﻿  main.c
+C:\Users\newmi\OneDrive\Documents\c++\CPlusPlus\raylibStuff\src\main.c(87,17): warning C4013: 'CameraYaw' undefined; assuming extern returning int
+C:\Users\newmi\OneDrive\Documents\c++\CPlusPlus\raylibStuff\src\main.c(88,17): warning C4013: 'CameraPitch' undefined; assuming extern returning int
   raylibStuff.vcxproj -> C:\Users\newmi\OneDrive\Documents\c++\CPlusPlus\raylibStuff\x64\Debug\raylibStuff.exe
