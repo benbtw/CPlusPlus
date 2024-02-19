@@ -24,25 +24,26 @@ private:
     struct SDL_Rect jumpAnim[2];
     struct SDL_Rect hurtAnim[2];
 
-    struct SDL_FPoint velocity;
+    struct SDL_Point velocity;
+    struct SDL_Point gravity;
 
     int delay;
     int index;
     int maxIndex;
     int speed;
+    int sum;
 
     char direction;
 
     bool left, right, top, bottom;
     bool grounded;
-    int gravity;
     float jumpSpeed;
 
 public:
     void init(SDL_Renderer *renderer);
     ~Player();
-    void movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect);
-    void update(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect);
+    void movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect, float dt);
+    void update(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect, float dt);
     void draw(SDL_Renderer *renderer, SDL_Rect cameraRect);
     int getPosX();
     int getPosY();

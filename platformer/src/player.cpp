@@ -50,13 +50,15 @@ void Player::init(SDL_Renderer *renderer)
     maxIndex = 2;
     velocity.x = 0;
     velocity.y = 0;
-    speed = 3;
+    gravity.x = 0;
+    gravity.y = -6;
+    speed = 50;
     direction = 'r';
-    gravity = 4;
     jumpSpeed = 140;
+    int sum = 0;
 }
 
-void Player::movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect)
+void Player::movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect, float dt)
 {
     delay++;
     for (SDL_Rect tile : tiles)
@@ -107,7 +109,6 @@ void Player::movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect)
                     {
                         bottom = true;
                         grounded = true;
-                        gravity = 4;
                     }
                 }
             }
@@ -115,41 +116,50 @@ void Player::movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect)
     }
 
     if (!grounded)
-        velocity.y += gravity;
+        pPos.y -= gravity.y;
+    else
+        sum = 0;
 
     const Uint8 *keyState = SDL_GetKeyboardState(NULL);
+    speed = 50;
+    gravity.y = -6;
 
     if (keyState[SDL_SCANCODE_W] && pPos.y > -16 && !top)
     {
-        velocity.y -= speed;
+        velocity.y -= speed * dt;
         maxIndex = 3;
         pSrc = climbAnim[index];
     }
     if (keyState[SDL_SCANCODE_A] && pPos.x >= -16 && !left)
     {
-        velocity.x -= speed;
+        velocity.x -= speed * dt;
         direction = 'l';
         maxIndex = 6;
         pSrc = leftAnim[index];
     }
     if (keyState[SDL_SCANCODE_D] && pPos.x <= 4260 && !right)
     {
-        velocity.x += speed;
+        velocity.x += speed * dt;
         direction = 'r';
         maxIndex = 6;
         pSrc = rightAnim[index];
     }
     if (keyState[SDL_SCANCODE_S] && pPos.y <= 1010 && !bottom)
     {
-        velocity.y += speed;
+        velocity.y += speed * dt;
     }
     if (keyState[SDL_SCANCODE_SPACE] && grounded)
     {
         maxIndex = 2;
-        pSrc = jumpAnim[index];
-        velocity.y = -jumpSpeed;
-        jumpSpeed += gravity;
-        gravity = 2;
+        pSrc = jumpAnim[0];
+        velocity.y -= 140;
+        gravity.y = -6;
+        playerBox.y += velocity.y * dt;
+        velocity.y += gravity.y * dt;
+        sum += 10;
+        if (sum >= 150)
+            grounded = false;
+        std::cout << sum << std::endl;
     }
 
     if (!keyState[SDL_SCANCODE_S] && !keyState[SDL_SCANCODE_W] &&
@@ -184,9 +194,9 @@ void Player::movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect)
     velocity.y = 0;
 }
 
-void Player::update(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect)
+void Player::update(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect, float dt)
 {
-    movement(tiles, cameraRect);
+    movement(tiles, cameraRect, dt);
 }
 
 void Player::draw(SDL_Renderer *renderer, SDL_Rect cameraRect)

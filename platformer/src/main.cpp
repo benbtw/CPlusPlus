@@ -29,7 +29,7 @@ int main(int argc, char *argvs[])
 
     Uint32 frameStart;
     int frameTime;
-    const int FPS = 144;
+    const int FPS = 60;
     const int frameDelay = 1000 / FPS;
 
     SDL_Event e;
@@ -42,6 +42,12 @@ int main(int argc, char *argvs[])
     while (running)
     {
         frameStart = SDL_GetTicks();
+
+        float dt = frameStart - frameTime;
+
+        if (dt > 0.15)
+            dt = 0.15;
+
         while (SDL_PollEvent(&e))
         {
             switch (e.type)
@@ -65,7 +71,7 @@ int main(int argc, char *argvs[])
         if (cameraRect.y + cameraRect.h >= 1010)
             cameraRect.y = 1010 - 430;
 
-        p.update(w.colTiles, cameraRect);
+        p.update(w.colTiles, cameraRect, dt);
 
         SDL_RenderClear(renderer);
         w.draw(renderer, cameraRect.x, cameraRect.y);
