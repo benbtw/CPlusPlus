@@ -19,7 +19,7 @@ SDL_Rect spriteRect(int x, int y, int w, int h)
     return rect;
 }
 
-SDL_Rect player = {SC_WIDTH / 2, SC_HEIGHT / 2, 64, 64};
+SDL_Rect player = {SC_WIDTH / 2, SC_HEIGHT / 2, 40, 56};
 SDL_Point velocity = {50, 50};
 SDL_Point gravity = {0, -1};
 bool grounded = false;
@@ -56,34 +56,34 @@ void drawMap(SDL_Renderer *renderer)
 
 bool isTouchingLeft(SDL_Rect rect)
 {
-    return player.x + 64 + velocity.x > rect.x &&
+    return player.x + 40 + velocity.x > rect.x &&
            player.x < rect.x &&
-           player.y + 64 > rect.y &&
-           player.y < rect.y + 64;
+           player.y + 40 > rect.y &&
+           player.y < rect.y + rect.w;
 }
 
 bool isTouchingRight(SDL_Rect rect)
 {
-    return player.x + velocity.x < rect.x + 64 &&
-           player.x + 64 > rect.x + 64 &&
-           player.y + 64 > rect.y &&
-           player.y < rect.y + 64;
+    return player.x + velocity.x < rect.x + rect.w &&
+           player.x + 40 > rect.x + rect.w &&
+           player.y + 40 > rect.y &&
+           player.y < rect.y + rect.w;
 }
 
 bool isTouchingTop(SDL_Rect rect)
 {
-    return player.y + 64 + velocity.y > rect.y &&
+    return player.y + 56 + velocity.y > rect.y &&
            player.y < rect.y &&
-           player.x + 64 > rect.x &&
-           player.x < rect.x + 64;
+           player.x + 56 > rect.x &&
+           player.x < rect.x + rect.h;
 }
 
 bool isTouchingBottom(SDL_Rect rect)
 {
-    return player.y + velocity.y < rect.y + 64 &&
-           player.y + 64 > rect.y + 64 &&
-           player.x + 64 > rect.x &&
-           player.x < rect.x + 64;
+    return player.y + velocity.y < rect.y + rect.h &&
+           player.y + 56 > rect.y + rect.h &&
+           player.x + 56 > rect.x &&
+           player.x < rect.x + rect.h;
 }
 
 void movement(float dt)
@@ -118,7 +118,7 @@ void movement(float dt)
         player.y += velocity.y * dt;
         velocity.y += gravity.y * dt;
         sum += 10;
-        if (sum >= 150)
+        if (sum >= 120)
             grounded = false;
         std::cout << sum << std::endl;
     }
@@ -129,7 +129,7 @@ void movement(float dt)
     {
         if (velocity.x > 0 && isTouchingLeft(tile))
         {
-            player.x = tile.x - tile.w;
+            player.x = tile.x - tile.w + 24;
             velocity.x = 0;
             right = true;
         }
@@ -141,7 +141,7 @@ void movement(float dt)
         }
         if (velocity.y > 0 && isTouchingTop(tile))
         {
-            player.y = tile.y - tile.h;
+            player.y = tile.y - tile.h + 9;
             velocity.y = 0;
             bottom = true;
             grounded = true;

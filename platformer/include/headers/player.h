@@ -39,6 +39,11 @@ private:
     bool grounded;
     float jumpSpeed;
 
+    bool isTouchingTop(SDL_Rect rect);
+    bool isTouchingBottom(SDL_Rect rect);
+    bool isTouchingLeft(SDL_Rect rect);
+    bool isTouchingRight(SDL_Rect rect);
+
 public:
     void init(SDL_Renderer *renderer);
     ~Player();
