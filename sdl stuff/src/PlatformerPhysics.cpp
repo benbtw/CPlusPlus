@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "SDL.h"
+#include "SDL_image.h"
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -19,39 +20,35 @@ SDL_Rect spriteRect(int x, int y, int w, int h)
     return rect;
 }
 
-SDL_Rect player = {SC_WIDTH / 2, SC_HEIGHT / 2, 40, 56};
+SDL_Rect player = {0, 0, 40, 56};
+SDL_Rect pRect = {0, 0, 80, 80};
 SDL_Point velocity = {50, 50};
 SDL_Point gravity = {0, -1};
 bool grounded = false;
 int sum = 0;
 bool left, right, top, bottom;
 
-std::vector<SDL_Rect> map = {
-    spriteRect(0, 448, 64, 64),
-    spriteRect(64, 448, 64, 64),
-    spriteRect(128, 448, 64, 64),
-    spriteRect(192, 448, 64, 64),
-    spriteRect(256, 448, 64, 64),
-    spriteRect(320, 448, 64, 64),
-    spriteRect(384, 448, 64, 64),
-    spriteRect(448, 448, 64, 64),
-    spriteRect(512, 448, 64, 64),
-    spriteRect(576, 448, 64, 64),
-    spriteRect(640, 448, 64, 64),
-    spriteRect(704, 448, 64, 64),
-    spriteRect(768, 448, 64, 64),
-    spriteRect(832, 448, 64, 64),
-    spriteRect(896, 448, 64, 64),
-    spriteRect(960, 448, 64, 64),
-    spriteRect(1024, 448, 64, 64),
-    spriteRect(200, 250, 64, 64),
-    spriteRect(400, 384, 64, 64)};
+std::vector<SDL_Rect>
+    map = {
+        spriteRect(0, 448, 48, 48),
+        spriteRect(48, 448, 48, 48),
+        spriteRect(96, 448, 48, 48),
+        spriteRect(144, 448, 48, 48),
+        spriteRect(192, 448, 48, 48),
+        spriteRect(240, 448, 48, 48),
+        spriteRect(288, 448, 48, 48),
+        spriteRect(336, 448, 48, 48),
+        spriteRect(432, 448, 48, 48),
+        spriteRect(480, 448, 48, 48),
+        spriteRect(200, 250, 48, 48),
+        spriteRect(400, 384, 48, 48)};
 
-void drawMap(SDL_Renderer *renderer)
+SDL_Rect grass = spriteRect(16, 16, 16, 16);
+
+void drawMap(SDL_Renderer *renderer, struct SDL_Texture *world)
 {
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 1);
     for (int i = 0; i < map.size(); i++)
-        SDL_RenderFillRect(renderer, &map[i]);
+        SDL_RenderCopy(renderer, world, &grass, &map[i]);
 }
 
 bool isTouchingLeft(SDL_Rect rect)
@@ -59,7 +56,7 @@ bool isTouchingLeft(SDL_Rect rect)
     return player.x + 40 + velocity.x > rect.x &&
            player.x < rect.x &&
            player.y + 40 > rect.y &&
-           player.y < rect.y + rect.w;
+           player.y < rect.y + rect.h;
 }
 
 bool isTouchingRight(SDL_Rect rect)
@@ -129,7 +126,7 @@ void movement(float dt)
     {
         if (velocity.x > 0 && isTouchingLeft(tile))
         {
-            player.x = tile.x - tile.w + 24;
+            player.x = tile.x - tile.w + 2;
             velocity.x = 0;
             right = true;
         }
@@ -141,7 +138,7 @@ void movement(float dt)
         }
         if (velocity.y > 0 && isTouchingTop(tile))
         {
-            player.y = tile.y - tile.h + 9;
+            player.y = tile.y - tile.h - 6;
             velocity.y = 0;
             bottom = true;
             grounded = true;
@@ -157,6 +154,8 @@ void movement(float dt)
 
     player.x += velocity.x;
     player.y += velocity.y;
+    pRect.x = player.x - 19;
+    pRect.y = player.y - 27;
     velocity.x = 0;
     velocity.y = 0;
 
@@ -191,6 +190,9 @@ int main(int argc, char *argvs[])
     const int FPS = 60;
     const int frameDelay = 1000 / FPS;
 
+    struct SDL_Texture *playerTex = IMG_LoadTexture(renderer, "player-idle-2.png");
+    struct SDL_Texture *world = IMG_LoadTexture(renderer, "tileset.png");
+
     SDL_Event e;
     bool running = true;
     while (running)
@@ -215,9 +217,10 @@ int main(int argc, char *argvs[])
         movement(dt);
 
         SDL_RenderClear(renderer);
-        drawMap(renderer);
+        drawMap(renderer, world);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 1);
-        SDL_RenderFillRect(renderer, &player);
+        SDL_RenderDrawRect(renderer, &player);
+        SDL_RenderCopy(renderer, playerTex, NULL, &pRect);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
         SDL_RenderPresent(renderer);
 
@@ -229,5 +232,7 @@ int main(int argc, char *argvs[])
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_Quit();
+    SDL_DestroyTexture(playerTex);
+    SDL_DestroyTexture(world);
     return 0;
 }

@@ -60,42 +60,42 @@ void Player::init(SDL_Renderer *renderer)
 
 bool Player::isTouchingLeft(SDL_Rect rect)
 {
-    return playerBox.x + 64 + velocity.x > rect.x &&
+    return playerBox.x + 40 + velocity.x > rect.x &&
            playerBox.x < rect.x &&
-           playerBox.y + 64 > rect.y &&
-           playerBox.y < rect.y + 64;
+           playerBox.y + 40 > rect.y &&
+           playerBox.y < rect.y + rect.w;
 }
 
 bool Player::isTouchingRight(SDL_Rect rect)
 {
-    return playerBox.x + velocity.x < rect.x + 64 &&
-           playerBox.x + 64 > rect.x + 64 &&
-           playerBox.y + 64 > rect.y &&
-           playerBox.y < rect.y + 64;
+    return playerBox.x + velocity.x < rect.x + rect.w &&
+           playerBox.x + 40 > rect.x + rect.w &&
+           playerBox.y + 40 > rect.y &&
+           playerBox.y < rect.y + rect.w;
 }
 
 bool Player::isTouchingTop(SDL_Rect rect)
 {
-    return playerBox.y + 64 + velocity.y > rect.y &&
+    return playerBox.y + 56 + velocity.y > rect.y &&
            playerBox.y < rect.y &&
-           playerBox.x + 64 > rect.x &&
-           playerBox.x < rect.x + 64;
+           playerBox.x + 56 > rect.x &&
+           playerBox.x < rect.x + rect.h;
 }
 
 bool Player::isTouchingBottom(SDL_Rect rect)
 {
-    return playerBox.y + velocity.y < rect.y + 64 &&
-           playerBox.y + 64 > rect.y + 64 &&
-           playerBox.x + 64 > rect.x &&
-           playerBox.x < rect.x + 64;
+    return playerBox.y + velocity.y < rect.y + rect.h &&
+           playerBox.y + 56 > rect.y + rect.h &&
+           playerBox.x + 56 > rect.x &&
+           playerBox.x < rect.x + rect.h;
 }
 
 void Player::movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect, float dt)
 {
     delay++;
 
-    // if (!grounded)
-    //  pPos.y -= gravity.y;
+    if (!grounded)
+        pPos.y -= gravity.y;
 
     const Uint8 *keyState = SDL_GetKeyboardState(NULL);
     speed = 50;
@@ -138,6 +138,8 @@ void Player::movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect, float dt
             grounded = false;
         std::cout << sum << std::endl;
     }
+    else
+        grounded = false;
 
     if (!keyState[SDL_SCANCODE_S] && !keyState[SDL_SCANCODE_W] &&
         !keyState[SDL_SCANCODE_A] && !keyState[SDL_SCANCODE_D] && !keyState[SDL_SCANCODE_LCTRL])
@@ -161,19 +163,19 @@ void Player::movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect, float dt
     {
         if (velocity.x > 0 && isTouchingLeft(tile))
         {
-            pPos.x = tile.x - 36;
+            pPos.x = tile.x - tile.w;
             velocity.x = 0;
             right = true;
         }
         if (velocity.x < 0 && isTouchingRight(tile))
         {
-            pPos.x = tile.x + tile.w - 20;
+            pPos.x = tile.x + tile.w;
             velocity.x = 0;
             left = true;
         }
         if (velocity.y > 0 && isTouchingTop(tile))
         {
-            pPos.y = tile.y - tile.h - 36;
+            pPos.y = tile.y - tile.h - 34;
             velocity.y = 0;
             bottom = true;
             grounded = true;
@@ -181,17 +183,11 @@ void Player::movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect, float dt
         }
         if (velocity.y < 0 && isTouchingBottom(tile))
         {
-            pPos.y = tile.y + tile.h - 10;
+            pPos.y = tile.y + tile.h;
             velocity.y = 0;
             top = true;
         }
     }
-
-    left = false;
-    right = false;
-    top = false;
-    bottom = false;
-    grounded = false;
 
     pPos.x += velocity.x;
     pPos.y += velocity.y;
@@ -199,6 +195,11 @@ void Player::movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect, float dt
     playerBox.y = pPos.y;
     velocity.x = 0;
     velocity.y = 0;
+
+    left = false;
+    top = false;
+    right = false;
+    bottom = false;
 }
 
 void Player::update(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect, float dt)
