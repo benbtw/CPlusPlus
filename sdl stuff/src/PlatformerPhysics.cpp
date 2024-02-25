@@ -55,7 +55,7 @@ bool isTouchingLeft(SDL_Rect rect)
 {
     return player.x + 40 + velocity.x > rect.x &&
            player.x < rect.x &&
-           player.y + 40 > rect.y &&
+           player.y + 56 > rect.y &&
            player.y < rect.y + rect.h;
 }
 
@@ -63,7 +63,7 @@ bool isTouchingRight(SDL_Rect rect)
 {
     return player.x + velocity.x < rect.x + rect.w &&
            player.x + 40 > rect.x + rect.w &&
-           player.y + 40 > rect.y &&
+           player.y + 56 > rect.y &&
            player.y < rect.y + rect.w;
 }
 
@@ -71,7 +71,7 @@ bool isTouchingTop(SDL_Rect rect)
 {
     return player.y + 56 + velocity.y > rect.y &&
            player.y < rect.y &&
-           player.x + 56 > rect.x &&
+           player.x + 40 > rect.x &&
            player.x < rect.x + rect.h;
 }
 
@@ -79,7 +79,7 @@ bool isTouchingBottom(SDL_Rect rect)
 {
     return player.y + velocity.y < rect.y + rect.h &&
            player.y + 56 > rect.y + rect.h &&
-           player.x + 56 > rect.x &&
+           player.x + 40 > rect.x &&
            player.x < rect.x + rect.h;
 }
 
@@ -138,7 +138,7 @@ void movement(float dt)
         }
         if (velocity.y > 0 && isTouchingTop(tile))
         {
-            player.y = tile.y - tile.h - 6;
+            player.y = tile.y - tile.h - 8;
             velocity.y = 0;
             bottom = true;
             grounded = true;

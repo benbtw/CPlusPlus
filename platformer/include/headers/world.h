@@ -8,10 +8,6 @@
 #include <map>
 #include <algorithm>
 
-/*
-    create the world, load in from text file do the same in this design as the top down
-*/
-
 class World
 {
 private:
@@ -30,7 +26,9 @@ private:
 public:
     void loadMapFile();
     void init(SDL_Renderer *renderer);
+    void update(SDL_Rect &playerBox, bool &death);
     void draw(SDL_Renderer *renderer, int camX, int camY);
     ~World();
     std::vector<SDL_Rect> colTiles;
+    std::vector<SDL_Rect> spikes;
 };

@@ -4,7 +4,9 @@ void Player::init(SDL_Renderer *renderer)
 {
     pTex = IMG_LoadTexture(renderer, "res/PlayerSheet.png");
     pSrc = {0, 0, 32, 32};
-    pPos = {100, 150, 80, 80};
+    pPos = {100, 232, 80, 80};
+    playerBox.x = pPos.x - 19;
+    playerBox.y = pPos.y - 27;
     playerBox.w = 40;
     playerBox.h = 56;
 
@@ -29,14 +31,11 @@ void Player::init(SDL_Renderer *renderer)
     climbAnim[1] = {33, 66, 32, 32};
     climbAnim[2] = {66, 66, 32, 32};
 
-    crouchAnim[0] = {0, 97, 32, 32}; // change back to 99 if needed
-    crouchAnim[1] = {33, 97, 32, 32};
+    jumpRightAnim[0] = {0, 160, 32, 32};
+    jumpRightAnim[1] = {33, 160, 32, 32};
 
-    hurtAnim[0] = {0, 132, 32, 32};
-    hurtAnim[1] = {33, 132, 32, 32};
-
-    jumpAnim[0] = {0, 160, 32, 32};
-    jumpAnim[1] = {33, 160, 32, 32};
+    jumpLeftAnim[0] = {32, 256, 32, 32};
+    jumpLeftAnim[1] = {0, 256, 32, 32};
 
     leftAnim[0] = {0, 193, 32, 32};
     leftAnim[1] = {33, 193, 32, 32};
@@ -55,94 +54,107 @@ void Player::init(SDL_Renderer *renderer)
     speed = 50;
     direction = 'r';
     jumpSpeed = 140;
-    int sum = 0;
+    sum = 0;
+    death = false;
 }
 
-bool Player::isTouchingLeft(SDL_Rect rect)
+bool Player::isTouchingLeft(SDL_Rect &rect)
 {
     return playerBox.x + 40 + velocity.x > rect.x &&
            playerBox.x < rect.x &&
-           playerBox.y + 40 > rect.y &&
-           playerBox.y < rect.y + rect.w;
+           playerBox.y + 56 > rect.y &&
+           playerBox.y < rect.y + rect.h;
 }
 
-bool Player::isTouchingRight(SDL_Rect rect)
+bool Player::isTouchingRight(SDL_Rect &rect)
 {
     return playerBox.x + velocity.x < rect.x + rect.w &&
            playerBox.x + 40 > rect.x + rect.w &&
-           playerBox.y + 40 > rect.y &&
-           playerBox.y < rect.y + rect.w;
+           playerBox.y + 56 > rect.y &&
+           playerBox.y < rect.y + rect.h;
 }
 
-bool Player::isTouchingTop(SDL_Rect rect)
+bool Player::isTouchingTop(SDL_Rect &rect)
 {
     return playerBox.y + 56 + velocity.y > rect.y &&
            playerBox.y < rect.y &&
-           playerBox.x + 56 > rect.x &&
+           playerBox.x + 40 > rect.x &&
            playerBox.x < rect.x + rect.h;
 }
 
-bool Player::isTouchingBottom(SDL_Rect rect)
+bool Player::isTouchingBottom(SDL_Rect &rect)
 {
     return playerBox.y + velocity.y < rect.y + rect.h &&
            playerBox.y + 56 > rect.y + rect.h &&
-           playerBox.x + 56 > rect.x &&
+           playerBox.x + 40 > rect.x &&
            playerBox.x < rect.x + rect.h;
 }
 
-void Player::movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect, float dt)
+void Player::movement(std::vector<SDL_Rect> &tiles, SDL_Rect cameraRect, float dt)
 {
+
     delay++;
-
-    if (!grounded)
-        pPos.y -= gravity.y;
-
     const Uint8 *keyState = SDL_GetKeyboardState(NULL);
     speed = 50;
-    gravity.y = -6;
+    gravity.y = -15;
 
-    if (keyState[SDL_SCANCODE_W] && pPos.y > -16 && !top)
+    if (!grounded && !(playerBox.x >= 1520 && playerBox.x <= 1550 && playerBox.y >= 322 && playerBox.y <= 898))
+        velocity.y -= gravity.y;
+
+    if (keyState[SDL_SCANCODE_W] && !top && (playerBox.x >= 1520 && playerBox.x <= 1550 && playerBox.y >= 322 && playerBox.y <= 900))
     {
+        gravity.y = 0;
         velocity.y -= speed * dt;
         maxIndex = 3;
         pSrc = climbAnim[index];
     }
-    if (keyState[SDL_SCANCODE_A] && pPos.x >= -16 && !left)
+    if (keyState[SDL_SCANCODE_A] && playerBox.x >= -16 && !left)
     {
         velocity.x -= speed * dt;
         direction = 'l';
         maxIndex = 6;
         pSrc = leftAnim[index];
     }
-    if (keyState[SDL_SCANCODE_D] && pPos.x <= 4260 && !right)
+    if (keyState[SDL_SCANCODE_D] && playerBox.x <= 4260 && !right)
     {
         velocity.x += speed * dt;
         direction = 'r';
         maxIndex = 6;
         pSrc = rightAnim[index];
     }
-    if (keyState[SDL_SCANCODE_S] && pPos.y <= 1010 && !bottom)
+    if (keyState[SDL_SCANCODE_S] && !bottom && (playerBox.x >= 1520 && playerBox.x <= 1550 && playerBox.y >= 322 && playerBox.y <= 900))
     {
+        gravity.y = 0;
         velocity.y += speed * dt;
+        maxIndex = 3;
+        pSrc = climbAnim[index];
     }
-    if (keyState[SDL_SCANCODE_SPACE] && grounded)
+    if ((keyState[SDL_SCANCODE_SPACE] && keyState[SDL_SCANCODE_A]) ||
+        (keyState[SDL_SCANCODE_SPACE] && keyState[SDL_SCANCODE_D]) || (keyState[SDL_SCANCODE_SPACE]) && grounded && !top)
     {
-        maxIndex = 2;
-        pSrc = jumpAnim[0];
-        velocity.y -= 140;
-        gravity.y = -6;
+        if (direction == 'l')
+            pSrc = jumpLeftAnim[0];
+        else if (direction == 'r')
+            pSrc = jumpRightAnim[0];
+        velocity.y -= 8;
+        gravity.y = -15;
         playerBox.y += velocity.y * dt;
         velocity.y += gravity.y * dt;
         sum += 10;
-        if (sum >= 150)
+        if (sum >= 160)
+        {
             grounded = false;
-        std::cout << sum << std::endl;
+            if (direction == 'l')
+                pSrc = jumpLeftAnim[1];
+            else if (direction == 'r')
+                pSrc = jumpRightAnim[1];
+        }
     }
     else
         grounded = false;
 
     if (!keyState[SDL_SCANCODE_S] && !keyState[SDL_SCANCODE_W] &&
-        !keyState[SDL_SCANCODE_A] && !keyState[SDL_SCANCODE_D] && !keyState[SDL_SCANCODE_LCTRL])
+        !keyState[SDL_SCANCODE_A] && !keyState[SDL_SCANCODE_D] && !keyState[SDL_SCANCODE_SPACE])
     {
         maxIndex = 4;
         if (direction == 'r')
@@ -163,46 +175,49 @@ void Player::movement(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect, float dt
     {
         if (velocity.x > 0 && isTouchingLeft(tile))
         {
-            pPos.x = tile.x - tile.w;
+            playerBox.x = tile.x - tile.w + 2;
             velocity.x = 0;
             right = true;
         }
         if (velocity.x < 0 && isTouchingRight(tile))
         {
-            pPos.x = tile.x + tile.w;
+            playerBox.x = tile.x + tile.w;
             velocity.x = 0;
             left = true;
         }
-        if (velocity.y > 0 && isTouchingTop(tile))
+        if (velocity.y > 0 && isTouchingTop(tile) && !(playerBox.x >= 1520 && playerBox.x <= 1550 && playerBox.y >= 322 && playerBox.y <= 700))
         {
-            pPos.y = tile.y - tile.h - 34;
+            playerBox.y = tile.y - tile.h - 8;
             velocity.y = 0;
             bottom = true;
             grounded = true;
             sum = 0;
         }
-        if (velocity.y < 0 && isTouchingBottom(tile))
+        if (velocity.y < 0 && isTouchingBottom(tile) && !(playerBox.x >= 1520 && playerBox.x <= 1550 && playerBox.y >= 322 && playerBox.y <= 700))
         {
-            pPos.y = tile.y + tile.h;
+            playerBox.y = tile.y + tile.h;
             velocity.y = 0;
             top = true;
         }
     }
 
-    pPos.x += velocity.x;
-    pPos.y += velocity.y;
-    playerBox.x = pPos.x;
-    playerBox.y = pPos.y;
+    playerBox.x += velocity.x;
+    playerBox.y += velocity.y;
+    pPos.x = playerBox.x - 19;
+    pPos.y = playerBox.y - 27;
     velocity.x = 0;
     velocity.y = 0;
 
+    if (playerBox.y >= 950)
+        death = true;
+
     left = false;
-    top = false;
-    right = false;
     bottom = false;
+    right = false;
+    top = false;
 }
 
-void Player::update(std::vector<SDL_Rect> tiles, SDL_Rect cameraRect, float dt)
+void Player::update(std::vector<SDL_Rect> &tiles, SDL_Rect cameraRect, float dt)
 {
     movement(tiles, cameraRect, dt);
 }
@@ -211,8 +226,8 @@ void Player::draw(SDL_Renderer *renderer, SDL_Rect cameraRect)
 {
     SDL_Rect drawingRect = {pPos.x - cameraRect.x, pPos.y - cameraRect.y, 80, 80};
     SDL_RenderCopy(renderer, pTex, &pSrc, &drawingRect);
-    playerBox = {playerBox.x - cameraRect.x + 20, playerBox.y - cameraRect.y + 27, 40, 56};
-    SDL_RenderDrawRect(renderer, &playerBox);
+    // drawingRect = {playerBox.x - cameraRect.x, playerBox.y - cameraRect.y, 40, 56};
+    // SDL_RenderDrawRect(renderer, &drawingRect);
 }
 
 Player::~Player()
@@ -222,10 +237,10 @@ Player::~Player()
 
 int Player::getPosX()
 {
-    return pPos.x;
+    return playerBox.x;
 }
 
 int Player::getPosY()
 {
-    return pPos.y;
+    return playerBox.y;
 }
