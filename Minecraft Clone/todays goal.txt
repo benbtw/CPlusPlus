@@ -1,5 +1,0 @@
-1. draw a square on the screen using gldrawarrays
-2. draw a square on the screen using gldrawelements
-3. draw a start using gldrawelements
-4. draw the outline of a square using the gl_lines primitive
-5. repeat challenge 3 but use the named buffer technique

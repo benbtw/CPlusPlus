@@ -13,7 +13,9 @@
                 "-L${workspaceFolder}/lib",
                 "${workspaceFolder}/src/main.cpp",
                 "${workspaceFolder}/src/glad.c",
+                "-lopengl32",
                 "-lglfw3dll",
+                "-lglew32",
                 "-o",
                 "${workspaceFolder}/main.exe"
             ],

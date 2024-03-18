@@ -83,6 +83,14 @@ void drawRays2D(SDL_Renderer *renderer)
 
     int r, mx, my, mp, dof, side;
     float vx, vy, rx, ry, ra, xo, yo, disV, disH;
+    // SDL_Rect rect = {0, 0, 1006 - 526, 160};
+    SDL_Rect rect = {0, 0, 1024, 350};
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 1);
+    SDL_RenderFillRect(renderer, &rect);
+    // rect = {0, 160, 1006 - 526, 320 - 160};
+    rect = {0, 350, 1024, 512 - 350};
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 1);
+    SDL_RenderFillRect(renderer, &rect);
 
     ra = FixAng(pa + 30);
 
@@ -177,34 +185,29 @@ void drawRays2D(SDL_Renderer *renderer)
             } // check next horizontal
         }
 
-        SDL_SetRenderDrawColor(renderer, 0, 225, 0, 1);
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 1);
         if (disV < disH)
         {
             rx = vx;
             ry = vy;
             disH = disV;
-            SDL_SetRenderDrawColor(renderer, 0, 200, 0, 1);
+            SDL_SetRenderDrawColor(renderer, 80, 0, 0, 1);
         } // horizontal hit first
-        SDL_RenderDrawLineF(renderer, px, py, rx, ry);
+        // SDL_RenderDrawLineF(renderer, px, py, rx, ry);
 
         int ca = FixAng(pa - ra);
         disH = disH * cos(degToRad(ca)); // fix fisheye
-        int lineH = (mapS * 320) / (disH);
-        if (lineH > 320)
+        int lineH = (mapS * 640) / (disH);
+        if (lineH > 640)
         {
-            lineH = 320;
+            lineH = 640;
         }                                 // line height and limit
-        int lineOff = 160 - (lineH >> 1); // line offset
+        int lineOff = 320 - (lineH >> 1); // line offset
 
-        SDL_RenderDrawLine(renderer, r * 8 + 530, lineOff, r * 8 + 530, lineOff + lineH);
-        SDL_RenderDrawLine(renderer, r * 8 + 531, lineOff, r * 8 + 531, lineOff + lineH);
-        SDL_RenderDrawLine(renderer, r * 8 + 532, lineOff, r * 8 + 532, lineOff + lineH);
-        SDL_RenderDrawLine(renderer, r * 8 + 533, lineOff, r * 8 + 533, lineOff + lineH);
-        SDL_RenderDrawLine(renderer, r * 8 + 534, lineOff, r * 8 + 534, lineOff + lineH);
-        SDL_RenderDrawLine(renderer, r * 8 + 535, lineOff, r * 8 + 535, lineOff + lineH);
-        SDL_RenderDrawLine(renderer, r * 8 + 536, lineOff, r * 8 + 536, lineOff + lineH);
-        SDL_RenderDrawLine(renderer, r * 8 + 537, lineOff, r * 8 + 537, lineOff + lineH);
-        SDL_RenderDrawLine(renderer, r * 8 + 538, lineOff, r * 8 + 538, lineOff + lineH);
+        for (int i = 0; i < 18; i++)
+        {
+            SDL_RenderDrawLine(renderer, r * 18 + i, lineOff, r * 18 + i, lineOff + lineH);
+        }
 
         ra = FixAng(ra - 1); // go to next ray, 60 total
     }
@@ -286,11 +289,11 @@ int main(int argc, char *argvs[])
 
         SDL_RenderClear(renderer);
 
-        drawMap2D(renderer);
+        // drawMap2D(renderer);
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 1);
-        SDL_RenderFillRect(renderer, &player);
-        SDL_RenderDrawLine(renderer, px, py, px + pdx * 20, py + pdy * 20);
+        // SDL_RenderFillRect(renderer, &player);
+        // SDL_RenderDrawLine(renderer, px, py, px + pdx * 20, py + pdy * 20);
         drawRays2D(renderer);
 
         SDL_SetRenderDrawColor(renderer, 70, 70, 70, 1);
