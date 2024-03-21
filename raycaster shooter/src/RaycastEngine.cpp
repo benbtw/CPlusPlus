@@ -197,7 +197,7 @@ SDL_Window *rEngine::initWindow(const int screenWidth, const int screenHeight, c
 }
 SDL_Renderer *rEngine::initRenderer(SDL_Window *window)
 {
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
     if (renderer == NULL)
         printf("SDL Renderer error, SDL_Error: ", SDL_GetError());
     return renderer;

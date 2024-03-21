@@ -30,10 +30,17 @@ int main(int argc, char *argvs[])
     SDL_Window *window = engine.initWindow(SC_WIDTH, SC_HEIGHT, "Raycast Shooter");
     SDL_Renderer *renderer = engine.initRenderer(window);
 
+    Uint32 frameStart;
+    int frameTime;
+    const int FPS = 120;
+    const int frameDelay = 1000 / FPS;
+
     SDL_Event e;
     bool running = true;
     while (running)
     {
+        frameStart = SDL_GetTicks();
+
         while (SDL_PollEvent(&e))
         {
             switch (e.type)
@@ -41,17 +48,24 @@ int main(int argc, char *argvs[])
             case SDL_QUIT:
                 running = false;
                 break;
+            case SDL_KEYDOWN:
+                if (e.key.keysym.sym == SDLK_ESCAPE)
+                    running = false;
+                break;
             }
         }
 
-        p.movement();
+        p.movement(map, mapX);
 
         SDL_RenderClear(renderer);
 
         engine.drawRays2D(renderer, p.px, p.py, p.pa, mapX, mapY, mapS, map);
 
-        SDL_SetRenderDrawColor(renderer, 70, 70, 70, 1);
         SDL_RenderPresent(renderer);
+
+        frameTime = SDL_GetTicks() - frameStart;
+        if (frameDelay > frameTime)
+            SDL_Delay(frameDelay - frameTime);
     }
 
     SDL_DestroyWindow(window);
