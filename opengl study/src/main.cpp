@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
@@ -8,19 +7,14 @@ using namespace glm;
 
 int main()
 {
-    glewExperimental = true; // for core profile
+    GLFWwindow *window;
+
     if (!glfwInit())
     {
         fprintf(stderr, "Failed to init GLFW\n");
         return -1;
     }
 
-    glfwWindowHint(GLFW_SAMPLES, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    GLFWwindow *window;
     window = glfwCreateWindow(1024, 768, "GLFW/GLEW", NULL, NULL);
     if (window == NULL)
     {
@@ -30,27 +24,15 @@ int main()
     }
 
     glfwMakeContextCurrent(window);
-    glewExperimental = true;
-    if (glewInit() != GLEW_OK)
+
+    while (!glfwWindowShouldClose(window))
     {
-        fprintf(stderr, "Failed to init GLEW\n");
-        return -1;
-    }
+        glClear(GL_COLOR_BUFFER_BIT);
 
-    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-
-    glClearColor(255.0f, 255.0f, 255.0f, 1.0f);
-
-    while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0)
-    {
-        // glClear(GL_COLOR_BUFFER_BIT);
-
-        glColor3f(0, 1, 1);
-        glBegin(GL_QUADS);
-        glVertex2i(526, 0);
-        glVertex2i(1006, 0);
-        glVertex2i(1006, 160);
-        glVertex2i(526, 160);
+        glBegin(GL_TRIANGLES);
+        glVertex2f(-0.5f, -0.5f);
+        glVertex2f(0.0f, 0.5f);
+        glVertex2f(0.5f, -0.5f);
         glEnd();
 
         glfwSwapBuffers(window);

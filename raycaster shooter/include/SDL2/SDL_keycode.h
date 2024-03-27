@@ -40,12 +40,12 @@
  *  an SDLK_* constant for those keys that do not generate characters.
  *
  *  A special exception is the number keys at the top of the keyboard which
- *  map to SDLK_0...SDLK_9 on AZERTY layouts.
+ *  mapW to SDLK_0...SDLK_9 on AZERTY layouts.
  */
 typedef Sint32 SDL_Keycode;
 
-#define SDLK_SCANCODE_MASK (1<<30)
-#define SDL_SCANCODE_TO_KEYCODE(X)  (X | SDLK_SCANCODE_MASK)
+#define SDLK_SCANCODE_MASK (1 << 30)
+#define SDL_SCANCODE_TO_KEYCODE(X) (X | SDLK_SCANCODE_MASK)
 
 typedef enum
 {

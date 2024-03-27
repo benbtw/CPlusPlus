@@ -8,6 +8,6 @@ public:
     float px = 300, py = 300; // player pos
     float pdx, pdy, pa;       // delta x, y, angle
     SDL_Rect player;
-    void movement(int map[], int mapX);
+    void movement(int mapW[], int mapX);
     Player();
 };

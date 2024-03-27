@@ -10,7 +10,7 @@ Player::Player()
     pdy = -sin(degToRad(pa));
 }
 
-void Player::movement(int map[], int mapX)
+void Player::movement(int mapW[], int mapX)
 {
     const Uint8 *keyState = SDL_GetKeyboardState(NULL);
 
@@ -37,39 +37,66 @@ void Player::movement(int map[], int mapX)
 
     if (keyState[SDL_SCANCODE_W])
     {
-        if (map[ipy * mapX + ipx_add_xo] == 0)
+        if (mapW[ipy * mapX + ipx_add_xo] == 0)
         {
             px += pdx * 1.5;
         }
-        if (map[ipy_add_yo * mapX + ipx] == 0)
+        if (mapW[ipy_add_yo * mapX + ipx] == 0)
         {
             py += pdy * 1.5;
         }
     }
     if (keyState[SDL_SCANCODE_S])
     {
-        if (map[ipy * mapX + ipx_sub_xo] == 0)
+        if (mapW[ipy * mapX + ipx_sub_xo] == 0)
         {
             px -= pdx * 1.5;
         }
-        if (map[ipy_sub_yo * mapX + ipx] == 0)
+        if (mapW[ipy_sub_yo * mapX + ipx] == 0)
         {
             py -= pdy * 1.5;
         }
     }
     if (keyState[SDL_SCANCODE_A])
     {
-        pa += 2.1;
+        pa += 1.5;
         pa = FixAng(pa);
         pdx = cos(degToRad(pa));
         pdy = -sin(degToRad(pa));
     }
     if (keyState[SDL_SCANCODE_D])
     {
-        pa -= 1.5;
+        pa -= 1;
         pa = FixAng(pa);
         pdx = cos(degToRad(pa));
         pdy = -sin(degToRad(pa));
+    }
+    if (keyState[SDL_SCANCODE_E])
+    {
+        int xo = 0;
+        if (pdx < 0)
+        {
+            xo = -25;
+        }
+        else
+        {
+            xo = 25;
+        }
+        int yo = 0;
+        if (pdy < 0)
+        {
+            yo = -25;
+        }
+        else
+        {
+            yo = 25;
+        }
+        int ipx = px / 64.0, ipx_add_xo = (px + xo) / 64.0;
+        int ipy = py / 64.0, ipy_add_yo = (py + yo) / 64.0;
+        if (mapW[ipy_add_yo * mapX + ipx_add_xo] == 4)
+        {
+            mapW[ipy_add_yo * mapX + ipx_add_xo] = 0;
+        }
     }
 
     player.x = px;

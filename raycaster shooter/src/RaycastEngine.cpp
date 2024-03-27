@@ -23,22 +23,18 @@ rEngine::rEngine()
     ca = 1;
 }
 
-void rEngine::drawRays2D(SDL_Renderer *renderer, int px, int py, int pa, int mapX, int mapY, int mapS, int map[])
+void rEngine::drawRays2D(SDL_Renderer *renderer, int px, int py, int pa, int mapX, int mapY, int mapS, int mapW[], int textures[], int mapF[], int mapC[])
 {
     int r, mx, my, mp, dof, side;
     float vx, vy, rx, ry, ra, xo, yo, disV, disH;
-
-    SDL_Rect rect = {0, 0, 1024, 350};
-    SDL_SetRenderDrawColor(renderer, cr, cg, cb, ca);
-    SDL_RenderFillRect(renderer, &rect);
-    rect = {0, 350, 1024, 512 - 350};
-    SDL_SetRenderDrawColor(renderer, fr, fg, fb, fa);
-    SDL_RenderFillRect(renderer, &rect);
 
     ra = FixAng(pa + 30);
 
     for (r = 0; r < 60; r++)
     {
+
+        int vmt = 0, hmt = 0;
+
         //---Vertical---
         dof = 0;
         side = 0;
@@ -70,8 +66,9 @@ void rEngine::drawRays2D(SDL_Renderer *renderer, int px, int py, int pa, int map
             mx = (int)(rx) >> 6;
             my = (int)(ry) >> 6;
             mp = my * mapX + mx;
-            if (mp > 0 && mp < mapX * mapY && map[mp] == 1)
+            if (mp > 0 && mp < mapX * mapY && mapW[mp] > 0)
             {
+                vmt = mapW[mp] - 1;
                 dof = 8;
                 disV = cos(degToRad(ra)) * (rx - px) - sin(degToRad(ra)) * (ry - py);
             } // hit
@@ -115,8 +112,9 @@ void rEngine::drawRays2D(SDL_Renderer *renderer, int px, int py, int pa, int map
             mx = (int)(rx) >> 6;
             my = (int)(ry) >> 6;
             mp = my * mapX + mx;
-            if (mp > 0 && mp < mapX * mapY && map[mp] == 1)
+            if (mp > 0 && mp < mapX * mapY && mapW[mp] > 0)
             {
+                hmt = mapW[mp] - 1;
                 dof = 8;
                 disH = cos(degToRad(ra)) * (rx - px) - sin(degToRad(ra)) * (ry - py);
             } // hit
@@ -128,9 +126,12 @@ void rEngine::drawRays2D(SDL_Renderer *renderer, int px, int py, int pa, int map
             } // check next horizontal
         }
 
+        float shade = 1;
         SDL_SetRenderDrawColor(renderer, wr, wg, wb, wa);
         if (disV < disH)
         {
+            hmt = vmt;
+            shade = 0.5;
             rx = vx;
             ry = vy;
             disH = disV;
@@ -140,18 +141,69 @@ void rEngine::drawRays2D(SDL_Renderer *renderer, int px, int py, int pa, int map
         int ca = FixAng(pa - ra);
         disH = disH * cos(degToRad(ca)); // fix fisheye
         int lineH = (mapS * 640) / (disH);
+        float ty_step = 32.0 / (float)lineH;
+        float ty_off = 0;
         if (lineH > 640)
         {
+            ty_off = (lineH - 640) / 2.0;
             lineH = 640;
         }                                 // line height and limit
         int lineOff = 320 - (lineH >> 1); // line offset
 
-        for (int i = 0; i < 18; i++)
+        // draws walls
+        int y = 0;
+        float ty = ty_off * ty_step + hmt * 32;
+        float tx;
+        if (shade == 1)
         {
-            SDL_RenderDrawLine(renderer, r * 18 + i, lineOff, r * 18 + i, lineOff + lineH);
+            tx = (int)(rx / 2.0) % 32;
+            if (ra > 180)
+                tx = 31 - tx;
+        }
+        else
+        {
+            tx = (int)(ry / 2.0) % 32;
+            if (ra > 90 && ra < 270)
+                tx = 31 - tx;
+        }
+
+        for (y = 0; y < lineH; y++)
+        {
+            SDL_RenderSetScale(renderer, 20, 1);
+            float c = textures[(int)ty * 32 + (int)(tx)] * shade;
+            c *= 255;
+            if (hmt == 0)
+                SDL_SetRenderDrawColor(renderer, c, c / 2.0, c / 2.0, 1);
+            if (hmt == 1)
+                SDL_SetRenderDrawColor(renderer, c, c, c / 2.0, 1);
+            if (hmt == 2)
+                SDL_SetRenderDrawColor(renderer, c / 2.0, c / 2.0, c, 1);
+            if (hmt == 3)
+                SDL_SetRenderDrawColor(renderer, c / 2.0, c, c / 2.0, 1);
+            SDL_RenderDrawPoint(renderer, r * 18 / 18, y + lineOff / 1);
+            ty += ty_step;
+            SDL_SetRenderDrawColor(renderer, c, c, c, 1);
+        }
+        // draw floors
+        for (y = lineOff + lineH; y < 640; y++)
+        {
+            float dy = y - (640 / 2.0), deg = degToRad(ra), raFix = cos(degToRad(FixAng(pa - ra)));
+            tx = px / 2 + cos(deg) * 158 * 32 / dy / raFix;
+            ty = py / 2 - sin(deg) * 158 * 32 / dy / raFix;
+            int mp = mapF[(int)(ty / 32.0) * mapX + (int)(tx / 32.0)] * 32 * 32;
+            float c = textures[((int)(ty) & 31) * 32 + ((int)(tx) & 31) + mp] * 178;
+            SDL_SetRenderDrawColor(renderer, c / 1.3, c / 1.3, c, 1);
+            SDL_RenderDrawPoint(renderer, r * 18 / 18, y / 1);
+
+            // draw ceiling
+            mp = mapC[(int)(ty / 32.0) * mapX + (int)(tx / 32.0)] * 32 * 32;
+            c = textures[((int)(ty) & 31) * 32 + ((int)(tx) & 31) + mp] * 178;
+            SDL_SetRenderDrawColor(renderer, c / 2.0, c / 1.2, c / 2.0, 1);
+            SDL_RenderDrawPoint(renderer, r * 18 / 18, 640 - y / 1);
         }
 
         ra = FixAng(ra - 1); // go to next ray, 60 total
+        SDL_RenderSetScale(renderer, 1, 1);
     }
 }
 
