@@ -32,7 +32,6 @@ void rEngine::drawRays2D(SDL_Renderer *renderer, int px, int py, int pa, int map
 
     for (r = 0; r < 60; r++)
     {
-
         int vmt = 0, hmt = 0;
 
         //---Vertical---
@@ -169,20 +168,14 @@ void rEngine::drawRays2D(SDL_Renderer *renderer, int px, int py, int pa, int map
 
         for (y = 0; y < lineH; y++)
         {
-            SDL_RenderSetScale(renderer, 20, 1);
-            float c = textures[(int)ty * 32 + (int)(tx)] * shade;
-            c *= 255;
-            if (hmt == 0)
-                SDL_SetRenderDrawColor(renderer, c, c / 2.0, c / 2.0, 1);
-            if (hmt == 1)
-                SDL_SetRenderDrawColor(renderer, c, c, c / 2.0, 1);
-            if (hmt == 2)
-                SDL_SetRenderDrawColor(renderer, c / 2.0, c / 2.0, c, 1);
-            if (hmt == 3)
-                SDL_SetRenderDrawColor(renderer, c / 2.0, c, c / 2.0, 1);
+            SDL_RenderSetScale(renderer, 18, 1);
+            int pixel = ((int)ty * 32 + (int)tx) * 3 + (hmt * 32 * 32 * 3);
+            int red = textures[pixel + 0] * shade;
+            int green = textures[pixel + 1] * shade;
+            int blue = textures[pixel + 2] * shade;
+            SDL_SetRenderDrawColor(renderer, red, green, blue, 1);
             SDL_RenderDrawPoint(renderer, r * 18 / 18, y + lineOff / 1);
             ty += ty_step;
-            SDL_SetRenderDrawColor(renderer, c, c, c, 1);
         }
         // draw floors
         for (y = lineOff + lineH; y < 640; y++)
@@ -191,14 +184,20 @@ void rEngine::drawRays2D(SDL_Renderer *renderer, int px, int py, int pa, int map
             tx = px / 2 + cos(deg) * 158 * 32 / dy / raFix;
             ty = py / 2 - sin(deg) * 158 * 32 / dy / raFix;
             int mp = mapF[(int)(ty / 32.0) * mapX + (int)(tx / 32.0)] * 32 * 32;
-            float c = textures[((int)(ty) & 31) * 32 + ((int)(tx) & 31) + mp] * 178;
-            SDL_SetRenderDrawColor(renderer, c / 1.3, c / 1.3, c, 1);
+            int pixel = (((int)(ty) & 31) * 32 + ((int)(tx) & 31)) * 3 + mp * 3;
+            int red = textures[pixel + 0] * 0.7;
+            int green = textures[pixel + 1] * 0.7;
+            int blue = textures[pixel + 2] * 0.7;
+            SDL_SetRenderDrawColor(renderer, red, green, blue, 1);
             SDL_RenderDrawPoint(renderer, r * 18 / 18, y / 1);
 
             // draw ceiling
             mp = mapC[(int)(ty / 32.0) * mapX + (int)(tx / 32.0)] * 32 * 32;
-            c = textures[((int)(ty) & 31) * 32 + ((int)(tx) & 31) + mp] * 178;
-            SDL_SetRenderDrawColor(renderer, c / 2.0, c / 1.2, c / 2.0, 1);
+            pixel = (((int)(ty) & 31) * 32 + ((int)(tx) & 31)) * 3 + mp * 3;
+            red = textures[pixel + 0];
+            green = textures[pixel + 1];
+            blue = textures[pixel + 2];
+            SDL_SetRenderDrawColor(renderer, red, green, blue, 1);
             SDL_RenderDrawPoint(renderer, r * 18 / 18, 640 - y / 1);
         }
 
